@@ -1,3 +1,7 @@
-<p>
-  history-table works!
-</p>
+<div class="history-table">
+  <ul *ngIf="rates.length > 0">
+    <li *ngFor="let rate of rates">
+      <span>{{ rate.date }} : </span><span>{{ rate.value }}</span>
+    </li>
+  </ul>
+</div>
