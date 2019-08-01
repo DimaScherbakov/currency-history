@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { HistoryRequest } from './history-request';
 import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
@@ -25,6 +26,33 @@ export class GetHistoryServiceService {
       base: this.requestData.base,
       symbols: this.requestData.symbols
     };
-    return this.http.get(this.historyUrl, { params: httpOptions });
+    return (
+      this.http
+        .get(this.historyUrl, { params: httpOptions })
+        // get data from response
+        .pipe(
+          map((resp: any) => {
+            let currencyName;
+            const rates = Object.keys(resp.rates).map(date => {
+              // get name of key
+              currencyName = Object.keys(resp.rates[date])[0];
+              return { date: date, value: resp.rates[date][currencyName] };
+            });
+            return { rates: rates, base: resp.base, symbols: currencyName };
+          })
+        )
+        // sort by date
+        .pipe(
+          map((resp: any) => {
+            resp.rates.sort((a, b) => {
+              // use new variables to calm down the linter
+              const dateA: any = new Date(a.date);
+              const dateB: any = new Date(b.date);
+              return dateA - dateB;
+            });
+            return resp;
+          })
+        )
+    );
   }
 }
