@@ -16,7 +16,6 @@ export class HistoryTableComponent implements OnInit {
       .getCurrencyHistory()
       .subscribe((resp: any) => {
         this.rates = resp.rates;
-        console.log(resp);
       });
   }
 }

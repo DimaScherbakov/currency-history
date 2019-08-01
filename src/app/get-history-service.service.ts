@@ -11,6 +11,8 @@ export class GetHistoryServiceService {
   historyUrl = 'https://api.exchangeratesapi.io/history?'; // start_at=2018-01-01&end_at=2018-09-01&base=USD&symbols=GBP
 
   // TODO : this is a mock , at real requestData should get params from current url
+  // TODO : service makes two requests: one for chart and one for table,
+  //        it should make only one request and use data for all other features
   requestData: HistoryRequest = {
     start_at: '2019-07-01',
     end_at: '2019-08-01',
