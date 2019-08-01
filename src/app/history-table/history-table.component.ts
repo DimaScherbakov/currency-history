@@ -8,7 +8,7 @@ import { GetHistoryServiceService } from '../get-history-service.service';
 })
 export class HistoryTableComponent implements OnInit {
   rates = [];
-
+  displayedColumns: string[] = ['date', 'value'];
   constructor(private getHistoryServiceService: GetHistoryServiceService) {}
 
   ngOnInit() {
