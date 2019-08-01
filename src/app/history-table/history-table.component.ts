@@ -12,10 +12,8 @@ export class HistoryTableComponent implements OnInit {
   constructor(private getHistoryServiceService: GetHistoryServiceService) {}
 
   ngOnInit() {
-    this.getHistoryServiceService
-      .getCurrencyHistory()
-      .subscribe((resp: any) => {
-        this.rates = resp.rates;
-      });
+    this.getHistoryServiceService.getCurrencyHistory$.subscribe((resp: any) => {
+      this.rates = resp.rates;
+    });
   }
 }

@@ -68,9 +68,8 @@ export class HistoryChartComponent implements OnInit {
   constructor(private getHistoryServiceService: GetHistoryServiceService) {}
 
   ngOnInit() {
-    this.getHistoryServiceService
-      .getCurrencyHistory()
-      .subscribe((response: any) => {
+    this.getHistoryServiceService.getCurrencyHistory$.subscribe(
+      (response: any) => {
         const values = [];
         response.rates.forEach(rate => {
           this.lineChartLabels.push(rate.date);
@@ -81,7 +80,8 @@ export class HistoryChartComponent implements OnInit {
           label: response.symbols,
           yAxisID: 'y-axis-1'
         });
-      });
+      }
+    );
   }
 
   private generateNumber(i: number) {
