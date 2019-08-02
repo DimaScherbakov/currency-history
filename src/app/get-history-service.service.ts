@@ -15,8 +15,8 @@ export class GetHistoryServiceService {
   requestData: HistoryRequest = {
     start_at: '2019-07-01',
     end_at: '2019-08-01',
-    base: 'USD',
-    symbols: 'GBP'
+    base: 'GBP',
+    symbols: 'USD'
   };
   getCurrencyHistory$ = new EventEmitter();
   constructor(private http: HttpClient) {
