@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { HistoryRequest } from './history-request';
-import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { EventEmitter } from '@angular/core';
+import { CacheHistoryService } from './cache-history.service';
 
 @Injectable({
   providedIn: 'root'
@@ -19,8 +19,11 @@ export class GetHistoryServiceService {
     symbols: 'USD'
   };
   getCurrencyHistory$ = new EventEmitter();
-  constructor(private http: HttpClient) {
-    this.httpGetCurrencyHistory();
+  constructor(
+    private http: HttpClient,
+    private cacheHistoryService: CacheHistoryService
+  ) {
+    this.getCurrencyHistory();
   }
 
   httpGetCurrencyHistory() {
@@ -59,5 +62,22 @@ export class GetHistoryServiceService {
       .subscribe(resp => {
         this.getCurrencyHistory$.emit(resp);
       });
+  }
+
+  getCurrencyHistory(): void {
+    const cachedData = this.cacheHistoryService.getCachedHistory(
+      this.requestData.base,
+      this.requestData.symbols
+    );
+    if (cachedData.rates) {
+      // use this flag to know if other components should emit cached data,
+      // can not emit cached data from here beacouse this emit starts before subscription in components
+      this.cacheHistoryService.isCachedData = true;
+    } else {
+      this.httpGetCurrencyHistory();
+      this.getCurrencyHistory$.subscribe(response => {
+        this.cacheHistoryService.setCachedHistory(response);
+      });
+    }
   }
 }

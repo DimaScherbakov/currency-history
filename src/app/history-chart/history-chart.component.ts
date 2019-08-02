@@ -3,6 +3,7 @@ import { ChartDataSets, ChartOptions } from 'chart.js';
 import { Color, BaseChartDirective, Label } from 'ng2-charts';
 import * as pluginAnnotations from 'chartjs-plugin-annotation';
 import { GetHistoryServiceService } from '../get-history-service.service';
+import { CacheHistoryService } from '../cache-history.service';
 
 @Component({
   selector: 'app-history-chart',
@@ -65,23 +66,43 @@ export class HistoryChartComponent implements OnInit {
 
   @ViewChild(BaseChartDirective, { static: true }) chart: BaseChartDirective;
 
-  constructor(private getHistoryServiceService: GetHistoryServiceService) {}
+  constructor(
+    private getHistoryServiceService: GetHistoryServiceService,
+    private cacheHistoryService: CacheHistoryService
+  ) {}
 
   ngOnInit() {
-    this.getHistoryServiceService.getCurrencyHistory$.subscribe(
-      (response: any) => {
-        const values = [];
-        response.rates.forEach(rate => {
-          this.lineChartLabels.push(rate.date);
-          values.push(rate.value);
-        });
-        this.lineChartData.push({
-          data: values,
-          label: response.symbols,
-          yAxisID: 'y-axis-1'
-        });
-      }
-    );
+    const values = [];
+    if (!this.cacheHistoryService.isCachedData) {
+      this.getHistoryServiceService.getCurrencyHistory$.subscribe(
+        (response: any) => {
+          response.rates.forEach(rate => {
+            this.lineChartLabels.push(rate.date);
+            values.push(rate.value);
+          });
+          this.lineChartData.push({
+            data: values,
+            label: response.symbols,
+            yAxisID: 'y-axis-1'
+          });
+        }
+      );
+    } else {
+      const cachedData = this.cacheHistoryService.getCachedHistory(
+        this.getHistoryServiceService.requestData.base,
+        this.getHistoryServiceService.requestData.symbols
+      );
+      const cachedRates = cachedData.rates;
+      cachedRates.forEach(rate => {
+        this.lineChartLabels.push(rate.date);
+        values.push(rate.value);
+      });
+      this.lineChartData.push({
+        data: values,
+        label: cachedData.symbols,
+        yAxisID: 'y-axis-1'
+      });
+    }
   }
 
   private generateNumber(i: number) {
