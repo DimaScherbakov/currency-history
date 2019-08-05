@@ -4,6 +4,7 @@ import { HistoryRequest } from './history-request';
 import { map } from 'rxjs/operators';
 import { EventEmitter } from '@angular/core';
 import { CacheHistoryService } from './cache-history.service';
+import { DateService } from './date.service';
 
 @Injectable({
   providedIn: 'root'
@@ -13,15 +14,16 @@ export class GetHistoryServiceService {
 
   // TODO : this is a mock , at real requestData should get params from current url
   requestData: HistoryRequest = {
-    start_at: '2019-07-01',
-    end_at: '2019-08-01',
+    start_at: this.dateService.getStartMonthDate(),
+    end_at: this.dateService.getCurrentDate(),
     base: 'GBP',
     symbols: 'USD'
   };
   getCurrencyHistory$ = new EventEmitter();
   constructor(
     private http: HttpClient,
-    private cacheHistoryService: CacheHistoryService
+    private cacheHistoryService: CacheHistoryService,
+    private dateService: DateService
   ) {
     this.getCurrencyHistory();
   }
@@ -69,10 +71,18 @@ export class GetHistoryServiceService {
       this.requestData.base,
       this.requestData.symbols
     );
-    if (cachedData.rates) {
+    if (cachedData.rates && cachedData.rates.length > 0) {
       // use this flag to know if other components should emit cached data,
-      // can not emit cached data from here beacouse this emit starts before subscription in components
+      // can not emit cached data from here beacause this emit starts before subscription in components
       this.cacheHistoryService.isCachedData = true;
+      this.requestData.start_at = this.dateService.getLastDate(
+        cachedData.rates
+      );
+      this.httpGetCurrencyHistory();
+      this.getCurrencyHistory$.subscribe(response => {
+        this.cacheHistoryService.updateCachedHistory(response);
+      });
+      // if no data cached then get currency data for all period of dates
     } else {
       this.httpGetCurrencyHistory();
       this.getCurrencyHistory$.subscribe(response => {
