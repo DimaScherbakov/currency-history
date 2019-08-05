@@ -24,7 +24,19 @@ export class CacheHistoryService {
   updateCachedHistory(response) {
     const nameCurrencyPair = response.symbols + '__' + response.base;
     const previousData = JSON.parse(localStorage.getItem(nameCurrencyPair));
-    const allData = previousData.concat(response.rates);
+    let allData = previousData.concat(response.rates);
+    allData = this.removeDuplicatedRates(allData);
     localStorage.setItem(nameCurrencyPair, JSON.stringify(allData));
+  }
+
+  removeDuplicatedRates(rates) {
+    return rates.reduce((acc, current) => {
+      const x = acc.find(item => item.date === current.date);
+      if (!x) {
+        return acc.concat([current]);
+      } else {
+        return acc;
+      }
+    }, []);
   }
 }

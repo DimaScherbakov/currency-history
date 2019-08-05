@@ -88,7 +88,6 @@ export class GetHistoryServiceService {
               response.base,
               response.symbols
             );
-            debugger;
             response.rates = updatedCache;
             return response;
           })
