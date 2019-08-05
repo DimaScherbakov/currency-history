@@ -16,11 +16,8 @@ export class HistoryTableComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    debugger;
-
     this.getHistoryServiceService.getCurrencyHistory$.subscribe((resp: any) => {
       if (!this.cacheHistoryService.isCachedData) {
-        debugger;
         this.rates = resp.rates;
       } else {
         const cachedData = this.cacheHistoryService.getCachedHistory(

@@ -1,11 +1,12 @@
 import { Injectable } from '@angular/core';
+import { DateService } from './date.service';
 @Injectable({
   providedIn: 'root'
 })
 export class CacheHistoryService {
   currencyData;
   isCachedData;
-  constructor() {}
+  constructor(private dataService: DateService) {}
 
   getCachedHistory(base, symbols) {
     const nameCurrencyPair = symbols + '__' + base;
@@ -38,5 +39,21 @@ export class CacheHistoryService {
         return acc;
       }
     }, []);
+  }
+  removeOldRates(rates: Array<any>) {
+    // set count of days to save in cache
+    const scale = this.getScale(this.dataService.scale);
+    const length = rates.length;
+    const start = length - scale <= 0 ? 0 : length - scale;
+    return rates.slice(start, length - 1);
+  }
+
+  getScale(scale) {
+    switch (scale) {
+      case 'month':
+        return 30;
+      default:
+        return 30;
+    }
   }
 }

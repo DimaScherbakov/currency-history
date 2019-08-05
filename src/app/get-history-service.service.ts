@@ -79,8 +79,8 @@ export class GetHistoryServiceService {
       this.requestData.start_at = this.dateService.getLastDate(
         cachedData.rates
       );
-      // update
       this.httpGetCurrencyHistory()
+        // update
         .pipe(
           map(response => {
             this.cacheHistoryService.updateCachedHistory(response);
@@ -88,7 +88,16 @@ export class GetHistoryServiceService {
               response.base,
               response.symbols
             );
-            response.rates = updatedCache;
+            return updatedCache;
+          })
+        )
+        // remove old rates
+        .pipe(
+          map(response => {
+            response.rates = this.cacheHistoryService.removeOldRates(
+              response.rates
+            );
+            this.cacheHistoryService.setCachedHistory(response);
             return response;
           })
         )

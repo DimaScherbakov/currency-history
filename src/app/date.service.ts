@@ -4,12 +4,14 @@ import { Injectable } from '@angular/core';
   providedIn: 'root'
 })
 export class DateService {
+  scale: string; // how may days are needed in cache
   constructor() {}
 
   getStartMonthDate(): string {
+    this.scale = 'month';
     const today = new Date();
     const dd = String(today.getDate()).padStart(2, '0');
-    const mm = String(today.getMonth()).padStart(2, '0'); // January is 0!
+    const mm = String(today.getMonth() - 3).padStart(2, '0'); // January is 0!
     const yyyy = today.getFullYear();
     return yyyy + '-' + mm + '-' + dd;
   }
