@@ -35,35 +35,34 @@ export class GetHistoryServiceService {
       base: this.requestData.base,
       symbols: this.requestData.symbols
     };
-    this.http
-      .get(this.historyUrl, { params: httpOptions })
-      // get data from response
-      .pipe(
-        map((resp: any) => {
-          let currencyName;
-          const rates = Object.keys(resp.rates).map(date => {
-            // get name of key
-            currencyName = Object.keys(resp.rates[date])[0];
-            return { date: date, value: resp.rates[date][currencyName] };
-          });
-          return { rates: rates, base: resp.base, symbols: currencyName };
-        })
-      )
-      // sort by date
-      .pipe(
-        map((resp: any) => {
-          resp.rates.sort((a, b) => {
-            // use new variables to calm down the linter
-            const dateA: any = new Date(a.date);
-            const dateB: any = new Date(b.date);
-            return dateA - dateB;
-          });
-          return resp;
-        })
-      )
-      .subscribe(resp => {
-        this.getCurrencyHistory$.emit(resp);
-      });
+    return (
+      this.http
+        .get(this.historyUrl, { params: httpOptions })
+        // get data from response
+        .pipe(
+          map((resp: any) => {
+            let currencyName;
+            const rates = Object.keys(resp.rates).map(date => {
+              // get name of key
+              currencyName = Object.keys(resp.rates[date])[0];
+              return { date: date, value: resp.rates[date][currencyName] };
+            });
+            return { rates: rates, base: resp.base, symbols: currencyName };
+          })
+        )
+        // sort by date
+        .pipe(
+          map((resp: any) => {
+            resp.rates.sort((a, b) => {
+              // use new variables to calm down the linter
+              const dateA: any = new Date(a.date);
+              const dateB: any = new Date(b.date);
+              return dateA - dateB;
+            });
+            return resp;
+          })
+        )
+    );
   }
 
   getCurrencyHistory(): void {
@@ -71,23 +70,45 @@ export class GetHistoryServiceService {
       this.requestData.base,
       this.requestData.symbols
     );
+    // if there is some cached data in the storage it should been updated
     if (cachedData.rates && cachedData.rates.length > 0) {
       // use this flag to know if other components should emit cached data,
       // can not emit cached data from here beacause this emit starts before subscription in components
       this.cacheHistoryService.isCachedData = true;
+      // get last date from cache
       this.requestData.start_at = this.dateService.getLastDate(
         cachedData.rates
       );
-      this.httpGetCurrencyHistory();
-      this.getCurrencyHistory$.subscribe(response => {
-        this.cacheHistoryService.updateCachedHistory(response);
-      });
+      // update
+      this.httpGetCurrencyHistory()
+        .pipe(
+          map(response => {
+            this.cacheHistoryService.updateCachedHistory(response);
+            const updatedCache = this.cacheHistoryService.getCachedHistory(
+              response.base,
+              response.symbols
+            );
+            debugger;
+            response.rates = updatedCache;
+            return response;
+          })
+        )
+        .subscribe(resp => {
+          this.getCurrencyHistory$.emit(resp);
+        });
+      this.getCurrencyHistory$.subscribe(response => {});
       // if no data cached then get currency data for all period of dates
     } else {
-      this.httpGetCurrencyHistory();
-      this.getCurrencyHistory$.subscribe(response => {
-        this.cacheHistoryService.setCachedHistory(response);
-      });
+      this.httpGetCurrencyHistory()
+        .pipe(
+          map(response => {
+            this.cacheHistoryService.setCachedHistory(response);
+            return response;
+          })
+        )
+        .subscribe(resp => {
+          this.getCurrencyHistory$.emit(resp);
+        });
     }
   }
 }

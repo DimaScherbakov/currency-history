@@ -22,8 +22,8 @@ export class DateService {
     return yyyy + '-' + mm + '-' + dd;
   }
 
+  // takes array of rates and returns the last rate in the list
   getLastDate(rates: Array<{ date: string; value: number }>) {
-    const today = new Date();
     const last = rates[rates.length - 1].date;
     return last;
   }

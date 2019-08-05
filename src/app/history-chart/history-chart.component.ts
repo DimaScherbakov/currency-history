@@ -73,9 +73,9 @@ export class HistoryChartComponent implements OnInit {
 
   ngOnInit() {
     const values = [];
-    if (!this.cacheHistoryService.isCachedData) {
-      this.getHistoryServiceService.getCurrencyHistory$.subscribe(
-        (response: any) => {
+    this.getHistoryServiceService.getCurrencyHistory$.subscribe(
+      (response: any) => {
+        if (!this.cacheHistoryService.isCachedData) {
           response.rates.forEach(rate => {
             this.lineChartLabels.push(rate.date);
             values.push(rate.value);
@@ -85,24 +85,24 @@ export class HistoryChartComponent implements OnInit {
             label: response.symbols,
             yAxisID: 'y-axis-1'
           });
+        } else {
+          const cachedData = this.cacheHistoryService.getCachedHistory(
+            this.getHistoryServiceService.requestData.base,
+            this.getHistoryServiceService.requestData.symbols
+          );
+          const cachedRates = cachedData.rates;
+          cachedRates.forEach(rate => {
+            this.lineChartLabels.push(rate.date);
+            values.push(rate.value);
+          });
+          this.lineChartData.push({
+            data: values,
+            label: cachedData.symbols,
+            yAxisID: 'y-axis-1'
+          });
         }
-      );
-    } else {
-      const cachedData = this.cacheHistoryService.getCachedHistory(
-        this.getHistoryServiceService.requestData.base,
-        this.getHistoryServiceService.requestData.symbols
-      );
-      const cachedRates = cachedData.rates;
-      cachedRates.forEach(rate => {
-        this.lineChartLabels.push(rate.date);
-        values.push(rate.value);
-      });
-      this.lineChartData.push({
-        data: values,
-        label: cachedData.symbols,
-        yAxisID: 'y-axis-1'
-      });
-    }
+      }
+    );
   }
 
   private generateNumber(i: number) {

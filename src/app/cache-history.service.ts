@@ -24,7 +24,7 @@ export class CacheHistoryService {
   updateCachedHistory(response) {
     const nameCurrencyPair = response.symbols + '__' + response.base;
     const previousData = JSON.parse(localStorage.getItem(nameCurrencyPair));
-    const allData = response.rates.concat(previousData);
+    const allData = previousData.concat(response.rates);
     localStorage.setItem(nameCurrencyPair, JSON.stringify(allData));
   }
 }
