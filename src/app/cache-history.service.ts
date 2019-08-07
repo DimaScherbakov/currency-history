@@ -6,6 +6,8 @@ import { DateService } from './date.service';
 export class CacheHistoryService {
   currencyData;
   isCachedData;
+
+  cache = {};
   constructor(private dataService: DateService) {}
 
   getCachedHistory(base, symbols) {
