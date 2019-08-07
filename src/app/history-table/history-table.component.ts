@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { GetHistoryServiceService } from '../get-history-service.service';
 import { CacheHistoryService } from '../cache-history.service';
-
 @Component({
   selector: 'app-history-table',
   templateUrl: './history-table.component.html',
@@ -9,7 +8,8 @@ import { CacheHistoryService } from '../cache-history.service';
 })
 export class HistoryTableComponent implements OnInit {
   rates = [];
-  displayedColumns: string[] = ['date', 'value'];
+  extremes;
+  displayedColumns: string[] = ['date', 'value', 'min', 'max'];
   constructor(
     private getHistoryServiceService: GetHistoryServiceService,
     private cacheHistoryService: CacheHistoryService

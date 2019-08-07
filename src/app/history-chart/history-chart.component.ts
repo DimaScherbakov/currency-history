@@ -4,6 +4,7 @@ import { Color, BaseChartDirective, Label } from 'ng2-charts';
 import * as pluginAnnotations from 'chartjs-plugin-annotation';
 import { GetHistoryServiceService } from '../get-history-service.service';
 import { CacheHistoryService } from '../cache-history.service';
+import { GetExtremesService } from '../get-extremes.service';
 
 @Component({
   selector: 'app-history-chart',
@@ -32,21 +33,7 @@ export class HistoryChartComponent implements OnInit {
       ]
     },
     annotation: {
-      annotations: [
-        {
-          type: 'line',
-          mode: 'horizontal',
-          scaleID: 'x-axis-0',
-          value: 'March',
-          borderColor: 'blue',
-          borderWidth: 2,
-          label: {
-            enabled: true,
-            fontColor: 'white',
-            content: 'LineAnno'
-          }
-        }
-      ]
+      annotations: []
     }
   };
   public lineChartColors: Color[] = [
@@ -68,11 +55,13 @@ export class HistoryChartComponent implements OnInit {
 
   constructor(
     private getHistoryServiceService: GetHistoryServiceService,
-    private cacheHistoryService: CacheHistoryService
+    private cacheHistoryService: CacheHistoryService,
+    private getExtremesService: GetExtremesService
   ) {}
 
   ngOnInit() {
     const values = [];
+    let extremes: any = {};
     this.getHistoryServiceService.getCurrencyHistory$.subscribe(
       (response: any) => {
         if (!this.cacheHistoryService.isCachedData) {
@@ -85,6 +74,7 @@ export class HistoryChartComponent implements OnInit {
             label: response.symbols,
             yAxisID: 'y-axis-1'
           });
+          extremes = this.getExtremesService.getExtremes(response.rates);
         } else {
           const cachedData = this.cacheHistoryService.getCachedHistory(
             this.getHistoryServiceService.requestData.base,
@@ -100,13 +90,39 @@ export class HistoryChartComponent implements OnInit {
             label: cachedData.symbols,
             yAxisID: 'y-axis-1'
           });
+          extremes = this.getExtremesService.getExtremes(cachedRates);
         }
+        // add min and max lines to the chart
+        this.lineChartOptions.annotation.annotations.push(
+          {
+            type: 'line',
+            mode: 'horizontal',
+            scaleID: 'y-axis-1',
+            value: extremes.min.value,
+            borderColor: 'blue',
+            borderWidth: 2,
+            label: {
+              enabled: true,
+              fontColor: 'white',
+              content: 'Minimum'
+            }
+          },
+          {
+            type: 'line',
+            mode: 'horizontal',
+            scaleID: 'y-axis-1',
+            value: extremes.max.value,
+            borderColor: 'red',
+            borderWidth: 2,
+            label: {
+              enabled: true,
+              fontColor: 'white',
+              content: 'Maximum'
+            }
+          }
+        );
       }
     );
-  }
-
-  private generateNumber(i: number) {
-    return Math.floor(Math.random() * (i < 2 ? 100 : 1000) + 1);
   }
 
   // events

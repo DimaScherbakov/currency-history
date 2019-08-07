@@ -11,7 +11,7 @@ export class DateService {
     this.scale = 'month';
     const today = new Date();
     const dd = String(today.getDate()).padStart(2, '0');
-    const mm = String(today.getMonth() - 3).padStart(2, '0'); // January is 0!
+    const mm = String(today.getMonth()).padStart(2, '0'); // January is 0!
     const yyyy = today.getFullYear();
     return yyyy + '-' + mm + '-' + dd;
   }

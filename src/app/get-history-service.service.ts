@@ -5,6 +5,7 @@ import { map } from 'rxjs/operators';
 import { EventEmitter } from '@angular/core';
 import { CacheHistoryService } from './cache-history.service';
 import { DateService } from './date.service';
+import { GetExtremesService } from './get-extremes.service';
 
 @Injectable({
   providedIn: 'root'
@@ -23,7 +24,8 @@ export class GetHistoryServiceService {
   constructor(
     private http: HttpClient,
     private cacheHistoryService: CacheHistoryService,
-    private dateService: DateService
+    private dateService: DateService,
+    private getExtremesService: GetExtremesService
   ) {
     this.getCurrencyHistory();
   }
@@ -91,6 +93,13 @@ export class GetHistoryServiceService {
             return updatedCache;
           })
         )
+        // find extremes(min and max points)
+        .pipe(
+          map((resp: any) => {
+            resp.rates = this.getExtremesService.addExtremes(resp.rates);
+            return resp;
+          })
+        )
         // remove old rates
         .pipe(
           map(response => {
@@ -108,6 +117,13 @@ export class GetHistoryServiceService {
       // if no data cached then get currency data for all period of dates
     } else {
       this.httpGetCurrencyHistory()
+        // find extremes(min and max points)
+        .pipe(
+          map((resp: any) => {
+            resp.rates = this.getExtremesService.addExtremes(resp.rates);
+            return resp;
+          })
+        )
         .pipe(
           map(response => {
             this.cacheHistoryService.setCachedHistory(response);
