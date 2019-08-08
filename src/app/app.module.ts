@@ -8,9 +8,11 @@ import { MatTableModule } from '@angular/material/table';
 import { AppComponent } from './app.component';
 import { HistoryTableComponent } from './history-table/history-table.component';
 import { HistoryChartComponent } from './history-chart/history-chart.component';
+import { CurrencyItemComponent } from './currency-item/currency-item.component';
+import { CurrencyListComponent } from './currency-list/currency-list.component';
 
 @NgModule({
-  declarations: [AppComponent, HistoryTableComponent, HistoryChartComponent],
+  declarations: [AppComponent, HistoryTableComponent, HistoryChartComponent, CurrencyItemComponent, CurrencyListComponent],
   imports: [
     BrowserModule,
     HttpClientModule,
