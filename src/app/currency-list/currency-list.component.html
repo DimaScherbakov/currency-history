@@ -1,3 +1,6 @@
-<p>
-  currency-list works!
-</p>
+<ul class="currency-list">
+  <li class="currency-item" *ngFor="let currency of currencyList">
+    {{ currency.base }}__{{ currency.symbols }}
+  </li>
+</ul>
+<!-- <app-currency-item></app-currency-item> -->

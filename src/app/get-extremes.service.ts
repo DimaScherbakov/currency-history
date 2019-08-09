@@ -7,8 +7,10 @@ export class GetExtremesService {
   constructor() {}
 
   addExtremes(rates) {
+    // remove old extremes
+    const boldRates = this.removeExtremes(rates);
     // sort rates by value
-    let sortedRates = this.sortRates(rates);
+    let sortedRates = this.sortRates(boldRates);
     sortedRates = this.addMin(sortedRates);
     sortedRates = this.addMax(sortedRates);
 
@@ -47,5 +49,17 @@ export class GetExtremesService {
       }
     });
     return extremes;
+  }
+
+  removeExtremes(rates) {
+    return rates.map(rate => {
+      if (rate.min) {
+        delete rate.min;
+      }
+      if (rate.max) {
+        delete rate.max;
+      }
+      return rate;
+    });
   }
 }

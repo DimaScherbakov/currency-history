@@ -6,6 +6,7 @@ import { EventEmitter } from '@angular/core';
 import { CacheHistoryService } from './cache-history.service';
 import { DateService } from './date.service';
 import { GetExtremesService } from './get-extremes.service';
+import { of } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -13,22 +14,18 @@ import { GetExtremesService } from './get-extremes.service';
 export class GetHistoryServiceService {
   historyUrl = 'https://api.exchangeratesapi.io/history?'; // start_at=2018-01-01&end_at=2018-09-01&base=USD&symbols=GBP
 
-  // TODO : this is a mock , at real requestData should get params from current url
   requestData: HistoryRequest = {
     start_at: this.dateService.getStartMonthDate(),
     end_at: this.dateService.getCurrentDate(),
-    base: 'GBP',
-    symbols: 'USD'
+    base: '',
+    symbols: ''
   };
-  getCurrencyHistory$ = new EventEmitter();
   constructor(
     private http: HttpClient,
     private cacheHistoryService: CacheHistoryService,
     private dateService: DateService,
     private getExtremesService: GetExtremesService
-  ) {
-    this.getCurrencyHistory();
-  }
+  ) {}
 
   httpGetCurrencyHistory() {
     const httpOptions = {
@@ -67,9 +64,10 @@ export class GetHistoryServiceService {
     );
   }
 
-  getCurrencyHistory(): void {
+  getCurrencyHistory(currencyName) {
+    this.requestData.base = currencyName;
     const cachedData = this.cacheHistoryService.getCachedHistory(
-      this.requestData.base,
+      currencyName,
       this.requestData.symbols
     );
     // if there is some cached data in the storage it should been updated
@@ -81,58 +79,56 @@ export class GetHistoryServiceService {
       this.requestData.start_at = this.dateService.getLastDate(
         cachedData.rates
       );
-      this.httpGetCurrencyHistory()
-        // update
-        .pipe(
-          map(response => {
-            this.cacheHistoryService.updateCachedHistory(response);
-            const updatedCache = this.cacheHistoryService.getCachedHistory(
-              response.base,
-              response.symbols
-            );
-            return updatedCache;
-          })
-        )
-        // find extremes(min and max points)
-        .pipe(
-          map((resp: any) => {
-            resp.rates = this.getExtremesService.addExtremes(resp.rates);
-            return resp;
-          })
-        )
-        // remove old rates
-        .pipe(
-          map(response => {
-            response.rates = this.cacheHistoryService.removeOldRates(
-              response.rates
-            );
-            this.cacheHistoryService.setCachedHistory(response);
-            return response;
-          })
-        )
-        .subscribe(resp => {
-          this.getCurrencyHistory$.emit(resp);
-        });
-      this.getCurrencyHistory$.subscribe(response => {});
+      return (
+        this.httpGetCurrencyHistory()
+          // update
+          .pipe(
+            map(response => {
+              this.cacheHistoryService.updateCachedHistory(response);
+              const updatedCache = this.cacheHistoryService.getCachedHistory(
+                response.base,
+                response.symbols
+              );
+              return updatedCache;
+            })
+          )
+          // find extremes(min and max points)
+          .pipe(
+            map((resp: any) => {
+              resp.rates = this.getExtremesService.addExtremes(resp.rates);
+              return resp;
+            })
+          )
+          // remove old rates
+          .pipe(
+            map(response => {
+              response.rates = this.cacheHistoryService.removeOldRates(
+                response.rates
+              );
+              // this.cacheHistoryService.setCachedHistory(response);
+              return response;
+            })
+          )
+      );
+      // this.getCurrencyHistory$.subscribe(response => {});
       // if no data cached then get currency data for all period of dates
     } else {
-      this.httpGetCurrencyHistory()
-        // find extremes(min and max points)
-        .pipe(
-          map((resp: any) => {
-            resp.rates = this.getExtremesService.addExtremes(resp.rates);
-            return resp;
-          })
-        )
-        .pipe(
-          map(response => {
-            this.cacheHistoryService.setCachedHistory(response);
-            return response;
-          })
-        )
-        .subscribe(resp => {
-          this.getCurrencyHistory$.emit(resp);
-        });
+      return (
+        this.httpGetCurrencyHistory()
+          // find extremes(min and max points)
+          .pipe(
+            map((resp: any) => {
+              resp.rates = this.getExtremesService.addExtremes(resp.rates);
+              return resp;
+            })
+          )
+          .pipe(
+            map(response => {
+              // this.cacheHistoryService.setCachedHistory(response);
+              return response;
+            })
+          )
+      );
     }
   }
 }
