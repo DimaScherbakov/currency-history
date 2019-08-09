@@ -4,6 +4,7 @@ import { GetHistoryServiceService } from '../get-history-service.service';
 import { CacheHistoryService } from '../cache-history.service';
 import { GetExtremesService } from '../get-extremes.service';
 import { forkJoin } from 'rxjs';
+import { MatTableDataSource } from '@angular/material/table';
 
 @Component({
   selector: 'app-currency-list',
@@ -12,9 +13,9 @@ import { forkJoin } from 'rxjs';
 })
 export class CurrencyListComponent implements OnInit {
   currencies = currencies.list;
-  currencyList = [];
+  currencyList = new MatTableDataSource<any>();
   currencyListObservables = [];
-
+  displayedColumns: string[] = ['name', 'min', 'max'];
   constructor(
     private getHistoryServiceService: GetHistoryServiceService,
     private cacheHistoryService: CacheHistoryService,
@@ -23,6 +24,7 @@ export class CurrencyListComponent implements OnInit {
 
   ngOnInit() {
     let rates = [];
+    const currencyList = [];
     this.currencies.forEach(curName => {
       this.currencyListObservables.push(
         this.getHistoryServiceService.getCurrencyHistory(curName)
@@ -41,12 +43,13 @@ export class CurrencyListComponent implements OnInit {
           rates = cachedRates;
         }
         const extremes = this.getExtremesService.getExtremes(rates);
-        this.currencyList.push({
+        currencyList.push({
           base: currencyPairData.base,
           symbols: currencyPairData.symbols,
           extremes: extremes
         });
       });
+      this.currencyList = currencyList;
     });
   }
 }

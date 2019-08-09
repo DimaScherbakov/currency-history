@@ -18,7 +18,7 @@ export class GetHistoryServiceService {
     start_at: this.dateService.getStartMonthDate(),
     end_at: this.dateService.getCurrentDate(),
     base: '',
-    symbols: ''
+    symbols: 'USD'
   };
   constructor(
     private http: HttpClient,
