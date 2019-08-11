@@ -16,17 +16,17 @@ export class HistoryTableComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.getHistoryServiceService.getCurrencyHistory$.subscribe((resp: any) => {
-      if (!this.cacheHistoryService.isCachedData) {
-        this.rates = resp.rates;
-      } else {
-        const cachedData = this.cacheHistoryService.getCachedHistory(
-          this.getHistoryServiceService.requestData.base,
-          this.getHistoryServiceService.requestData.symbols
-        );
-        const cachedRates = cachedData.rates;
-        this.rates = cachedRates;
-      }
-    });
+    // this.getHistoryServiceService.getCurrencyHistory$.subscribe((resp: any) => {
+    //   if (!this.cacheHistoryService.isCachedData) {
+    //     this.rates = resp.rates;
+    //   } else {
+    //     const cachedData = this.cacheHistoryService.getCachedHistory(
+    //       this.getHistoryServiceService.requestData.base,
+    //       this.getHistoryServiceService.requestData.symbols
+    //     );
+    //     const cachedRates = cachedData.rates;
+    //     this.rates = cachedRates;
+    //   }
+    // });
   }
 }

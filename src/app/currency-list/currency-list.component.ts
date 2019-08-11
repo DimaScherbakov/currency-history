@@ -5,6 +5,7 @@ import { CacheHistoryService } from '../cache-history.service';
 import { GetExtremesService } from '../get-extremes.service';
 import { forkJoin } from 'rxjs';
 import { MatTableDataSource } from '@angular/material/table';
+import { TransactionAreaService } from '../transaction-area.service';
 
 @Component({
   selector: 'app-currency-list',
@@ -15,11 +16,21 @@ export class CurrencyListComponent implements OnInit {
   currencies = currencies.list;
   currencyList: MatTableDataSource<any[]>;
   currencyListObservables = [];
-  displayedColumns: string[] = ['name', 'min', 'max'];
+  displayedColumns: string[] = [
+    'name',
+    'min',
+    'max',
+    'minBorder',
+    'maxBorder',
+    'sell',
+    'buy',
+    'current'
+  ];
   constructor(
     private getHistoryServiceService: GetHistoryServiceService,
     private cacheHistoryService: CacheHistoryService,
-    private getExtremesService: GetExtremesService
+    private getExtremesService: GetExtremesService,
+    private transactionAreaService: TransactionAreaService
   ) {}
 
   ngOnInit() {
@@ -43,10 +54,16 @@ export class CurrencyListComponent implements OnInit {
           rates = cachedRates;
         }
         const extremes = this.getExtremesService.getExtremes(rates);
+        const transactionBorders = this.transactionAreaService.getBorders(
+          rates,
+          extremes
+        );
         currencyList.push({
           base: currencyPairData.base,
           symbols: currencyPairData.symbols,
-          extremes: extremes
+          extremes: extremes,
+          transactionBorders: transactionBorders,
+          current: rates[rates.length - 1]
         });
       });
       this.currencyList = new MatTableDataSource(currencyList);
