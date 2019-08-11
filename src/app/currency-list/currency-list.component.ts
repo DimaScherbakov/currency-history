@@ -13,7 +13,7 @@ import { MatTableDataSource } from '@angular/material/table';
 })
 export class CurrencyListComponent implements OnInit {
   currencies = currencies.list;
-  currencyList = new MatTableDataSource<any>();
+  currencyList: MatTableDataSource<any[]>;
   currencyListObservables = [];
   displayedColumns: string[] = ['name', 'min', 'max'];
   constructor(
@@ -49,7 +49,7 @@ export class CurrencyListComponent implements OnInit {
           extremes: extremes
         });
       });
-      this.currencyList = currencyList;
+      this.currencyList = new MatTableDataSource(currencyList);
     });
   }
 }
