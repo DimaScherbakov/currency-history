@@ -34,11 +34,23 @@ export class CurrencyListComponent implements OnInit {
   ngOnInit() {
     let rates = [];
     const currencyList = [];
-    this.currencies.forEach(curName => {
-      this.currencyListObservables.push(
-        this.getHistoryServiceService.getCurrencyHistory(curName)
-      );
-    });
+
+    let cs = this.currencies;
+    let counter = 1;
+    for (let i = cs.length - 1; i > 0; i--) {
+      const b = cs[i];
+      cs.forEach(symb => {
+        if (b === symb) {
+          return;
+        }
+        this.currencyListObservables.push(
+          this.getHistoryServiceService.getCurrencyHistory(b, symb)
+        );
+        console.log(counter, b, symb);
+        counter++;
+      });
+      cs = cs.slice(0, cs.length - 1);
+    }
     forkJoin(this.currencyListObservables).subscribe((response: any) => {
       response.forEach(currencyPairData => {
         rates = currencyPairData.rates;

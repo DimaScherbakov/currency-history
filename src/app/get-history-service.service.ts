@@ -18,7 +18,7 @@ export class GetHistoryServiceService {
     start_at: this.dateService.getStartMonthDate(),
     end_at: this.dateService.getCurrentDate(),
     base: '',
-    symbols: 'USD'
+    symbols: ''
   };
   constructor(
     private http: HttpClient,
@@ -65,12 +65,10 @@ export class GetHistoryServiceService {
   }
 
   // TODO: add symbols as an argument
-  getCurrencyHistory(currencyName) {
-    this.requestData.base = currencyName;
-    const cachedData = this.cacheHistoryService.getCachedHistory(
-      currencyName,
-      this.requestData.symbols
-    );
+  getCurrencyHistory(base, symbols) {
+    this.requestData.base = base;
+    this.requestData.symbols = symbols;
+    const cachedData = this.cacheHistoryService.getCachedHistory(base, symbols);
     // if there is some cached data in the storage it should been updated
     if (cachedData.rates && cachedData.rates.length > 0) {
       // get last date from cache

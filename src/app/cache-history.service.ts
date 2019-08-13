@@ -9,9 +9,6 @@ export class CacheHistoryService {
 
   getCachedHistory(base, symbols) {
     const nameCurrencyPair = base + '__' + symbols;
-    if (nameCurrencyPair === 'EUR__USD') {
-      debugger;
-    }
     const rates = localStorage.getItem(nameCurrencyPair);
     return {
       rates: JSON.parse(rates),
