@@ -27,7 +27,7 @@ export class GetHistoryServiceService {
     private getExtremesService: GetExtremesService
   ) {}
 
-  httpGetCurrencyHistory() {
+  httpGetCurrencyHistory(requestData) {
     const httpOptions = {
       start_at: this.requestData.start_at,
       end_at: this.requestData.end_at,
@@ -64,6 +64,7 @@ export class GetHistoryServiceService {
     );
   }
 
+  // TODO: add symbols as an argument
   getCurrencyHistory(currencyName) {
     this.requestData.base = currencyName;
     const cachedData = this.cacheHistoryService.getCachedHistory(
@@ -72,15 +73,12 @@ export class GetHistoryServiceService {
     );
     // if there is some cached data in the storage it should been updated
     if (cachedData.rates && cachedData.rates.length > 0) {
-      // use this flag to know if other components should emit cached data,
-      // can not emit cached data from here beacause this emit starts before subscription in components
-      this.cacheHistoryService.isCachedData = true;
       // get last date from cache
       this.requestData.start_at = this.dateService.getLastDate(
         cachedData.rates
       );
       return (
-        this.httpGetCurrencyHistory()
+        this.httpGetCurrencyHistory(this.requestData)
           // update
           .pipe(
             map(response => {
@@ -100,21 +98,26 @@ export class GetHistoryServiceService {
             })
           )
           // remove old rates
+          // .pipe(
+          //   map(response => {
+          //     response.rates = this.cacheHistoryService.removeOldRates(
+          //       response.rates
+          //     );
+          //     // this.cacheHistoryService.setCachedHistory(response);
+          //     return response;
+          //   })
+          // )
           .pipe(
-            map(response => {
-              response.rates = this.cacheHistoryService.removeOldRates(
-                response.rates
-              );
-              // this.cacheHistoryService.setCachedHistory(response);
-              return response;
+            map((resp: any) => {
+              this.cacheHistoryService.setCachedHistory(resp);
+              return resp;
             })
           )
       );
-      // this.getCurrencyHistory$.subscribe(response => {});
       // if no data cached then get currency data for all period of dates
     } else {
       return (
-        this.httpGetCurrencyHistory()
+        this.httpGetCurrencyHistory(this.requestData)
           // find extremes(min and max points)
           .pipe(
             map((resp: any) => {
@@ -124,7 +127,7 @@ export class GetHistoryServiceService {
           )
           .pipe(
             map(response => {
-              // this.cacheHistoryService.setCachedHistory(response);
+              this.cacheHistoryService.setCachedHistory(response);
               return response;
             })
           )

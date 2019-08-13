@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { currencies } from '../currency-list';
 import { GetHistoryServiceService } from '../get-history-service.service';
-import { CacheHistoryService } from '../cache-history.service';
 import { GetExtremesService } from '../get-extremes.service';
 import { forkJoin } from 'rxjs';
 import { MatTableDataSource } from '@angular/material/table';
@@ -28,7 +27,6 @@ export class CurrencyListComponent implements OnInit {
   ];
   constructor(
     private getHistoryServiceService: GetHistoryServiceService,
-    private cacheHistoryService: CacheHistoryService,
     private getExtremesService: GetExtremesService,
     private transactionAreaService: TransactionAreaService
   ) {}
@@ -43,16 +41,7 @@ export class CurrencyListComponent implements OnInit {
     });
     forkJoin(this.currencyListObservables).subscribe((response: any) => {
       response.forEach(currencyPairData => {
-        if (!this.cacheHistoryService.isCachedData) {
-          rates = currencyPairData.rates;
-        } else {
-          const cachedData = this.cacheHistoryService.getCachedHistory(
-            this.getHistoryServiceService.requestData.base,
-            this.getHistoryServiceService.requestData.symbols
-          );
-          const cachedRates = cachedData.rates;
-          rates = cachedRates;
-        }
+        rates = currencyPairData.rates;
         const extremes = this.getExtremesService.getExtremes(rates);
         const transactionBorders = this.transactionAreaService.getBorders(
           rates,

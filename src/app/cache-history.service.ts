@@ -5,11 +5,13 @@ import { DateService } from './date.service';
 })
 export class CacheHistoryService {
   currencyData;
-  isCachedData;
   constructor(private dataService: DateService) {}
 
   getCachedHistory(base, symbols) {
-    const nameCurrencyPair = symbols + '__' + base;
+    const nameCurrencyPair = base + '__' + symbols;
+    if (nameCurrencyPair === 'EUR__USD') {
+      debugger;
+    }
     const rates = localStorage.getItem(nameCurrencyPair);
     return {
       rates: JSON.parse(rates),
@@ -19,11 +21,11 @@ export class CacheHistoryService {
   }
 
   setCachedHistory(response) {
-    const nameCurrencyPair = response.symbols + '__' + response.base;
+    const nameCurrencyPair = response.base + '__' + response.symbols;
     localStorage.setItem(nameCurrencyPair, JSON.stringify(response.rates));
   }
   updateCachedHistory(response) {
-    const nameCurrencyPair = response.symbols + '__' + response.base;
+    const nameCurrencyPair = response.base + '__' + response.symbols;
     const previousData = JSON.parse(localStorage.getItem(nameCurrencyPair));
     let allData = previousData.concat(response.rates);
     allData = this.removeDuplicatedRates(allData);
