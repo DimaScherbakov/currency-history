@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { TransactionAreaService } from '../transaction-area.service';
 
 @Component({
   selector: 'app-currency-item',
@@ -6,10 +7,13 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./currency-item.component.css']
 })
 export class CurrencyItemComponent implements OnInit {
-
-  constructor() { }
+  currencyData;
+  constructor(private transactionAreaService: TransactionAreaService) {}
 
   ngOnInit() {
+    this.transactionAreaService.transferCurrency$.subscribe(currencyData => {
+      this.currencyData = currencyData;
+      console.log(this.currencyData);
+    });
   }
-
 }

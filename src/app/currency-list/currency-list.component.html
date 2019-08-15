@@ -6,7 +6,9 @@
   <ng-container matColumnDef="name">
     <th mat-header-cell *matHeaderCellDef>Name</th>
     <td mat-cell *matCellDef="let element">
-      {{ element.base }} {{ element.symbols }}
+      <span style="cursor:pointer;" (click)="navigate(element)">
+        {{ element.base }} {{ element.symbols }}</span
+      >
     </td>
   </ng-container>
 

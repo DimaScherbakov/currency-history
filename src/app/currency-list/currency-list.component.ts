@@ -5,6 +5,7 @@ import { GetExtremesService } from '../get-extremes.service';
 import { forkJoin } from 'rxjs';
 import { MatTableDataSource } from '@angular/material/table';
 import { TransactionAreaService } from '../transaction-area.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-currency-list',
@@ -25,10 +26,12 @@ export class CurrencyListComponent implements OnInit {
     'buy',
     'current'
   ];
+
   constructor(
     private getHistoryServiceService: GetHistoryServiceService,
     private getExtremesService: GetExtremesService,
-    private transactionAreaService: TransactionAreaService
+    private transactionAreaService: TransactionAreaService,
+    private router: Router
   ) {}
 
   ngOnInit() {
@@ -64,10 +67,19 @@ export class CurrencyListComponent implements OnInit {
           symbols: currencyPairData.symbols,
           extremes: extremes,
           transactionBorders: transactionBorders,
-          current: rates[rates.length - 1]
+          current: rates[rates.length - 1],
+          rates: currencyPairData.rates
         });
       });
       this.currencyList = new MatTableDataSource(currencyList);
     });
+  }
+
+  navigate(currency) {
+    this.router.navigate([
+      'currency-item',
+      `${currency.base}-${currency.symbols}`
+    ]);
+    this.transactionAreaService.emitCurrency(currency);
   }
 }
