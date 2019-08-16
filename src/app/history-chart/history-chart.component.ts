@@ -6,6 +6,8 @@ import { GetHistoryServiceService } from '../get-history-service.service';
 import { CacheHistoryService } from '../cache-history.service';
 import { GetExtremesService } from '../get-extremes.service';
 
+import { TransactionAreaService } from '../transaction-area.service';
+
 @Component({
   selector: 'app-history-chart',
   templateUrl: './history-chart.component.html',
@@ -56,73 +58,54 @@ export class HistoryChartComponent implements OnInit {
   constructor(
     private getHistoryServiceService: GetHistoryServiceService,
     private cacheHistoryService: CacheHistoryService,
-    private getExtremesService: GetExtremesService
+    private getExtremesService: GetExtremesService,
+    private transactionAreaService: TransactionAreaService
   ) {}
 
   ngOnInit() {
     const values = [];
-    // let extremes: any = {};
-    // this.getHistoryServiceService.getCurrencyHistory$.subscribe(
-    //   (response: any) => {
-    //     if (!this.cacheHistoryService.isCachedData) {
-    //       response.rates.forEach(rate => {
-    //         this.lineChartLabels.push(rate.date);
-    //         values.push(rate.value);
-    //       });
-    //       this.lineChartData.push({
-    //         data: values,
-    //         label: response.symbols,
-    //         yAxisID: 'y-axis-1'
-    //       });
-    //       extremes = this.getExtremesService.getExtremes(response.rates);
-    //     } else {
-    //       const cachedData = this.cacheHistoryService.getCachedHistory(
-    //         this.getHistoryServiceService.requestData.base,
-    //         this.getHistoryServiceService.requestData.symbols
-    //       );
-    //       const cachedRates = cachedData.rates;
-    //       cachedRates.forEach(rate => {
-    //         this.lineChartLabels.push(rate.date);
-    //         values.push(rate.value);
-    //       });
-    //       this.lineChartData.push({
-    //         data: values,
-    //         label: cachedData.symbols,
-    //         yAxisID: 'y-axis-1'
-    //       });
-    //       extremes = this.getExtremesService.getExtremes(cachedRates);
-    //     }
-    //     // add min and max lines to the chart
-    //     this.lineChartOptions.annotation.annotations.push(
-    //       {
-    //         type: 'line',
-    //         mode: 'horizontal',
-    //         scaleID: 'y-axis-1',
-    //         value: extremes.min.value,
-    //         borderColor: 'blue',
-    //         borderWidth: 2,
-    //         label: {
-    //           enabled: true,
-    //           fontColor: 'white',
-    //           content: 'Minimum'
-    //         }
-    //       },
-    //       {
-    //         type: 'line',
-    //         mode: 'horizontal',
-    //         scaleID: 'y-axis-1',
-    //         value: extremes.max.value,
-    //         borderColor: 'red',
-    //         borderWidth: 2,
-    //         label: {
-    //           enabled: true,
-    //           fontColor: 'white',
-    //           content: 'Maximum'
-    //         }
-    //       }
-    //     );
-    //   }
-    // );
+    let extremes: any = {};
+    this.transactionAreaService.transferCurrency$.subscribe((response: any) => {
+      response.rates.forEach(rate => {
+        this.lineChartLabels.push(rate.date);
+        values.push(rate.value);
+      });
+      this.lineChartData.push({
+        data: values,
+        label: response.symbols,
+        yAxisID: 'y-axis-1'
+      });
+      extremes = this.getExtremesService.getExtremes(response.rates);
+      // add min and max lines to the chart
+      this.lineChartOptions.annotation.annotations.push(
+        {
+          type: 'line',
+          mode: 'horizontal',
+          scaleID: 'y-axis-1',
+          value: extremes.min.value,
+          borderColor: 'blue',
+          borderWidth: 2,
+          label: {
+            enabled: true,
+            fontColor: 'white',
+            content: 'Minimum'
+          }
+        },
+        {
+          type: 'line',
+          mode: 'horizontal',
+          scaleID: 'y-axis-1',
+          value: extremes.max.value,
+          borderColor: 'red',
+          borderWidth: 2,
+          label: {
+            enabled: true,
+            fontColor: 'white',
+            content: 'Maximum'
+          }
+        }
+      );
+    });
   }
 
   // events

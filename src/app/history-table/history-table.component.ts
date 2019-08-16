@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { GetHistoryServiceService } from '../get-history-service.service';
-import { CacheHistoryService } from '../cache-history.service';
+import { TransactionAreaService } from '../transaction-area.service';
 @Component({
   selector: 'app-history-table',
   templateUrl: './history-table.component.html',
@@ -10,23 +9,11 @@ export class HistoryTableComponent implements OnInit {
   rates = [];
   extremes;
   displayedColumns: string[] = ['date', 'value', 'min', 'max'];
-  constructor(
-    private getHistoryServiceService: GetHistoryServiceService,
-    private cacheHistoryService: CacheHistoryService
-  ) {}
+  constructor(private transactionAreaService: TransactionAreaService) {}
 
   ngOnInit() {
-    // this.getHistoryServiceService.getCurrencyHistory$.subscribe((resp: any) => {
-    //   if (!this.cacheHistoryService.isCachedData) {
-    //     this.rates = resp.rates;
-    //   } else {
-    //     const cachedData = this.cacheHistoryService.getCachedHistory(
-    //       this.getHistoryServiceService.requestData.base,
-    //       this.getHistoryServiceService.requestData.symbols
-    //     );
-    //     const cachedRates = cachedData.rates;
-    //     this.rates = cachedRates;
-    //   }
-    // });
+    this.transactionAreaService.transferCurrency$.subscribe(resp => {
+      this.rates = resp.rates;
+    });
   }
 }
