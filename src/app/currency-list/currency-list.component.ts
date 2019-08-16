@@ -6,6 +6,7 @@ import { forkJoin } from 'rxjs';
 import { MatTableDataSource } from '@angular/material/table';
 import { TransactionAreaService } from '../transaction-area.service';
 import { Router } from '@angular/router';
+import { CalculatorService } from '../calculator.service';
 
 @Component({
   selector: 'app-currency-list',
@@ -31,7 +32,8 @@ export class CurrencyListComponent implements OnInit {
     private getHistoryServiceService: GetHistoryServiceService,
     private getExtremesService: GetExtremesService,
     private transactionAreaService: TransactionAreaService,
-    private router: Router
+    private router: Router,
+    private calculatorService: CalculatorService
   ) {}
 
   ngOnInit() {
@@ -62,13 +64,20 @@ export class CurrencyListComponent implements OnInit {
           rates,
           extremes
         );
+        const maxBet = this.calculatorService.getMaxBet(
+          rates,
+          extremes,
+          transactionBorders.recomendations,
+          currencyPairData.base + ' ' + currencyPairData.symbols
+        );
         currencyList.push({
           base: currencyPairData.base,
           symbols: currencyPairData.symbols,
           extremes: extremes,
           transactionBorders: transactionBorders,
           current: rates[rates.length - 1],
-          rates: currencyPairData.rates
+          rates: currencyPairData.rates,
+          maxBet: maxBet
         });
       });
       this.currencyList = new MatTableDataSource(currencyList);

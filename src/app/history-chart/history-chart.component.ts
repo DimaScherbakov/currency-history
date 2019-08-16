@@ -2,8 +2,6 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { ChartDataSets, ChartOptions } from 'chart.js';
 import { Color, BaseChartDirective, Label } from 'ng2-charts';
 import * as pluginAnnotations from 'chartjs-plugin-annotation';
-import { GetHistoryServiceService } from '../get-history-service.service';
-import { CacheHistoryService } from '../cache-history.service';
 import { GetExtremesService } from '../get-extremes.service';
 
 import { TransactionAreaService } from '../transaction-area.service';
@@ -56,8 +54,6 @@ export class HistoryChartComponent implements OnInit {
   @ViewChild(BaseChartDirective, { static: true }) chart: BaseChartDirective;
 
   constructor(
-    private getHistoryServiceService: GetHistoryServiceService,
-    private cacheHistoryService: CacheHistoryService,
     private getExtremesService: GetExtremesService,
     private transactionAreaService: TransactionAreaService
   ) {}
@@ -105,6 +101,7 @@ export class HistoryChartComponent implements OnInit {
           }
         }
       );
+      debugger;
     });
   }
 
