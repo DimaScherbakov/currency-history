@@ -2,12 +2,12 @@ import { Component, OnInit } from '@angular/core';
 import { currencies } from '../currency-list';
 import { GetHistoryServiceService } from '../get-history-service.service';
 import { GetExtremesService } from '../get-extremes.service';
-import { forkJoin } from 'rxjs';
 import { MatTableDataSource } from '@angular/material/table';
 import { TransactionAreaService } from '../transaction-area.service';
 import { Router } from '@angular/router';
 import { CalculatorService } from '../calculator.service';
-
+import { from } from 'rxjs';
+import { concatAll } from 'rxjs/operators';
 @Component({
   selector: 'app-currency-list',
   templateUrl: './currency-list.component.html',
@@ -56,8 +56,9 @@ export class CurrencyListComponent implements OnInit {
       });
       cs = cs.slice(0, cs.length - 1);
     }
-    forkJoin(this.currencyListObservables).subscribe((response: any) => {
-      response.forEach(currencyPairData => {
+    from(this.currencyListObservables)
+      .pipe(concatAll())
+      .subscribe((currencyPairData: any) => {
         rates = currencyPairData.rates;
         const extremes = this.getExtremesService.getExtremes(rates);
         const transactionBorders = this.transactionAreaService.getBorders(
@@ -79,9 +80,8 @@ export class CurrencyListComponent implements OnInit {
           rates: currencyPairData.rates,
           maxBet: maxBet
         });
+        this.currencyList = new MatTableDataSource(currencyList);
       });
-      this.currencyList = new MatTableDataSource(currencyList);
-    });
   }
 
   navigate(currency) {

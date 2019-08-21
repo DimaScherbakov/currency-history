@@ -2,7 +2,7 @@ export const currencies = {
   list: [
     'CAD',
     'HKD',
-    'ISK',
+    // 'ISK',
     'PHP',
     'DKK',
     'HUF',

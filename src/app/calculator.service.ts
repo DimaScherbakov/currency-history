@@ -29,7 +29,8 @@ export class CalculatorService {
     }) We have recomendations to sell and buy currency at the same time, rates list might not have enough data`;
     if (recommends.sell && recommends.buy) {
       if (this.name !== 'BGN EUR') {
-        throw new Error(errorText);
+        // throw new Error(errorText);
+        console.error(errorText);
       }
       console.error(errorText);
     }
