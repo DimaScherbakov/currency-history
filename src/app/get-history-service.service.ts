@@ -2,7 +2,8 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { HistoryRequest } from './history-request';
 import { map, switchMap } from 'rxjs/operators';
-import { EventEmitter } from '@angular/core';
+// import { retryWhen, delay, take, concatMap } from 'rxjs/operators';
+// import { throwError } from 'rxjs';
 import { CacheHistoryService } from './cache-history.service';
 import { DateService } from './date.service';
 import { GetExtremesService } from './get-extremes.service';
@@ -16,7 +17,7 @@ export class GetHistoryServiceService {
 
   requestData: HistoryRequest = {
     start_at: '2009-01-01',
-    end_at: this.dateService.getCurrentDate(),
+    end_at: this.dateService.getYesterdayDate(),
     base: '',
     symbols: ''
   };
@@ -62,6 +63,14 @@ export class GetHistoryServiceService {
             return resp;
           })
         )
+      // .pipe(
+      //   retryWhen(errors =>
+      //     errors.pipe(
+      //       delay(4000),
+      //       take(100)
+      //     )
+      //   )
+      // )
     );
   }
 
