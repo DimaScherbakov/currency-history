@@ -87,8 +87,14 @@ export class GetHistoryServiceService {
           this.requestData.start_at = this.dateService.getLastDate(
             cachedData.rates
           );
-          return (
-            this.httpGetCurrencyHistory(this.requestData)
+
+          // if the last date less than current, we should update data
+          let getActualData;
+          if (
+            this.dateService.getLastDate(cachedData.rates) <
+            this.requestData.end_at
+          ) {
+            getActualData = this.httpGetCurrencyHistory(this.requestData)
               // update
               .pipe(
                 switchMap(response => {
@@ -103,7 +109,12 @@ export class GetHistoryServiceService {
                   );
                   return updatedCache;
                 })
-              )
+              );
+          } else {
+            getActualData = of(cachedData);
+          }
+          return (
+            getActualData
               // find extremes(min and max points)
               .pipe(
                 map((resp: any) => {
