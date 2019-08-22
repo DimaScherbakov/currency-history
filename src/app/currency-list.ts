@@ -30,7 +30,7 @@ export const currencies = {
     'MXN',
     'SGD',
     'AUD',
-    'ILS',
+    // 'ILS',
     'KRW',
     'PLN'
   ]
