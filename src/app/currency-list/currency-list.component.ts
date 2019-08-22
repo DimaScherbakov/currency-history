@@ -25,7 +25,8 @@ export class CurrencyListComponent implements OnInit {
     'maxBorder',
     'sell',
     'buy',
-    'current'
+    'current',
+    'maxBet'
   ];
 
   constructor(

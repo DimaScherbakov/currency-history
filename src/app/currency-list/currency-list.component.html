@@ -77,6 +77,15 @@
       {{ element.current.date }}
     </td>
   </ng-container>
+  <!-- maxBet Column -->
+  <ng-container matColumnDef="maxBet">
+    <th mat-header-cell *matHeaderCellDef>MaxBet</th>
+    <td mat-cell *matCellDef="let element">
+      {{ element.maxBet }}
+      <br />
+      <!-- {{ element.current.date }} -->
+    </td>
+  </ng-container>
 
   <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
   <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
