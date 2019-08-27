@@ -11,6 +11,7 @@ import {
   MatInputModule,
   MatCardModule
 } from '@angular/material';
+import { MatButtonModule } from '@angular/material/button';
 
 import { AppComponent } from './app.component';
 import { HistoryTableComponent } from './history-table/history-table.component';
@@ -39,7 +40,8 @@ import { UserComponent } from './user/user.component';
     ReactiveFormsModule,
     MatFormFieldModule,
     MatInputModule,
-    MatCardModule
+    MatCardModule,
+    MatButtonModule
   ],
   providers: [],
   bootstrap: [AppComponent]

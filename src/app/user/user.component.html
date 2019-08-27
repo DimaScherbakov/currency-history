@@ -14,7 +14,13 @@
           placeholder="Deposit"
         />
       </mat-form-field>
-      <button type="submit" [disabled]="!userForm.valid">
+      <button
+        class="submit-button"
+        mat-flat-button
+        color="primary"
+        type="submit"
+        [disabled]="!userForm.valid"
+      >
         Submit
       </button>
     </form>
