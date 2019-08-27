@@ -40,6 +40,7 @@ export class CacheHistoryService {
   updateCachedHistory(response) {
     return this.getCachedHistory(response.base, response.symbols).pipe(
       switchMap((resp: any) => {
+        resp.rates = resp.rates ? resp.rates : [];
         let allData = resp.rates.concat(response.rates);
         allData = this.removeDuplicatedRates(allData);
         return this.setCachedHistory({

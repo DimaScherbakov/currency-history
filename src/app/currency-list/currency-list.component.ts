@@ -6,8 +6,8 @@ import { MatTableDataSource } from '@angular/material/table';
 import { TransactionAreaService } from '../transaction-area.service';
 import { Router } from '@angular/router';
 import { CalculatorService } from '../calculator.service';
-import { from } from 'rxjs';
-import { concatAll, switchMap } from 'rxjs/operators';
+import { from, of } from 'rxjs';
+import { concatAll, switchMap, tap } from 'rxjs/operators';
 import { TransferUserDataService } from '../transfer-user-data.service';
 @Component({
   selector: 'app-currency-list',
@@ -17,7 +17,6 @@ import { TransferUserDataService } from '../transfer-user-data.service';
 export class CurrencyListComponent implements OnInit {
   currencies = currencies.list;
   currencyList: MatTableDataSource<any[]>;
-  currencyListObservables = [];
   displayedColumns: string[] = [
     'name',
     'min',
@@ -40,34 +39,23 @@ export class CurrencyListComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    let rates = [];
     const currencyList = [];
-
-    let cs = this.currencies;
-    let counter = 1;
-    for (let i = cs.length - 1; i > 0; i--) {
-      const b = cs[i];
-      cs.forEach(symb => {
-        if (b === symb) {
-          return;
-        }
-        this.currencyListObservables.push(
-          this.getHistoryServiceService.getCurrencyHistory(b, symb)
-        );
-        console.log(counter, b, symb);
-        counter++;
-      });
-      cs = cs.slice(0, cs.length - 1);
-    }
+    const pairNames = this.generateCurrencyPairNames(this.currencies);
+    const currencyListObservables = pairNames.map(pairName => {
+      return this.getHistoryServiceService.getCurrencyHistory(
+        pairName.base,
+        pairName.symbols
+      );
+    });
     this.transferUserDataService.userData$
       .pipe(
         switchMap(() => {
-          return from(this.currencyListObservables);
+          return from(currencyListObservables);
         })
       )
       .pipe(concatAll())
       .subscribe((currencyPairData: any) => {
-        rates = currencyPairData.rates;
+        const rates = currencyPairData.rates;
         const extremes = this.getExtremesService.getExtremes(rates);
         const transactionBorders = this.transactionAreaService.getBorders(
           rates,
@@ -98,5 +86,23 @@ export class CurrencyListComponent implements OnInit {
       `${currency.base}-${currency.symbols}`
     ]);
     this.transactionAreaService.emitCurrency(currency);
+  }
+
+  private generateCurrencyPairNames(
+    names
+  ): Array<{ base: string; symbols: string }> {
+    let cs = names;
+    const pairsNames = [];
+    for (let i = cs.length - 1; i > 0; i--) {
+      const b = cs[i];
+      cs.forEach(symb => {
+        if (b === symb) {
+          return;
+        }
+        pairsNames.push({ base: b, symbols: symb });
+      });
+      cs = cs.slice(0, cs.length - 1);
+    }
+    return pairsNames;
   }
 }

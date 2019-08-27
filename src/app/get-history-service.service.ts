@@ -67,7 +67,9 @@ export class GetHistoryServiceService {
   getCurrencyHistory(base, symbols) {
     return this.cacheHistoryService.getCachedHistory(base, symbols).pipe(
       switchMap((cachedData: any) => {
-        let localRequestData = Object.assign({}, this.requestData);
+        this.requestData.symbols = symbols;
+        this.requestData.base = base;
+        const localRequestData = Object.assign({}, this.requestData);
         // if there is some cached data in the storage it should been updated
         if (cachedData.rates && cachedData.rates.length > 0) {
           // get last date from cache
