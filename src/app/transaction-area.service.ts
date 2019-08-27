@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import { EventEmitter } from '@angular/core';
 import { of } from 'rxjs';
 @Injectable({
   providedIn: 'root'
@@ -13,7 +12,7 @@ export class TransactionAreaService {
     extremes
   ): { minBorder; maxBorder; recomendations: {} } {
     const totalRange = this.getTotalRange(extremes);
-    const transactionRange = this.getTransactionRange(10, totalRange);
+    const transactionRange = this.getTransactionRange(3, totalRange);
     const minBorder = this.getMinBorder(extremes.min, transactionRange);
     const maxBorder = this.getMaxBorder(extremes.max, transactionRange);
     const recomendations = this.getRecommends(rates, minBorder, maxBorder);

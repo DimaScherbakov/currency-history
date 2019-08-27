@@ -101,7 +101,6 @@ export class HistoryChartComponent implements OnInit {
           }
         }
       );
-      debugger;
     });
   }
 

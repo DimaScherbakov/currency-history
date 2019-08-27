@@ -7,7 +7,8 @@ import { TransactionAreaService } from '../transaction-area.service';
 import { Router } from '@angular/router';
 import { CalculatorService } from '../calculator.service';
 import { from } from 'rxjs';
-import { concatAll } from 'rxjs/operators';
+import { concatAll, switchMap } from 'rxjs/operators';
+import { TransferUserDataService } from '../transfer-user-data.service';
 @Component({
   selector: 'app-currency-list',
   templateUrl: './currency-list.component.html',
@@ -34,7 +35,8 @@ export class CurrencyListComponent implements OnInit {
     private getExtremesService: GetExtremesService,
     private transactionAreaService: TransactionAreaService,
     private router: Router,
-    private calculatorService: CalculatorService
+    private calculatorService: CalculatorService,
+    public transferUserDataService: TransferUserDataService
   ) {}
 
   ngOnInit() {
@@ -57,7 +59,12 @@ export class CurrencyListComponent implements OnInit {
       });
       cs = cs.slice(0, cs.length - 1);
     }
-    from(this.currencyListObservables)
+    this.transferUserDataService.userData$
+      .pipe(
+        switchMap(() => {
+          return from(this.currencyListObservables);
+        })
+      )
       .pipe(concatAll())
       .subscribe((currencyPairData: any) => {
         rates = currencyPairData.rates;

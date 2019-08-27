@@ -1,9 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { HistoryRequest } from './history-request';
-import { map, switchMap } from 'rxjs/operators';
-// import { retryWhen, delay, take, concatMap } from 'rxjs/operators';
-// import { throwError } from 'rxjs';
+import { map, switchMap, delay } from 'rxjs/operators';
 import { CacheHistoryService } from './cache-history.service';
 import { DateService } from './date.service';
 import { GetExtremesService } from './get-extremes.service';
@@ -63,38 +61,27 @@ export class GetHistoryServiceService {
             return resp;
           })
         )
-      // .pipe(
-      //   retryWhen(errors =>
-      //     errors.pipe(
-      //       delay(4000),
-      //       take(100)
-      //     )
-      //   )
-      // )
     );
   }
-
+  // TODO: use local created object instead of global requestData
   getCurrencyHistory(base, symbols) {
-    this.requestData.base = base;
-    this.requestData.symbols = symbols;
     return this.cacheHistoryService.getCachedHistory(base, symbols).pipe(
       switchMap((cachedData: any) => {
-        this.requestData.base = cachedData.base;
-        this.requestData.symbols = cachedData.symbols;
+        let localRequestData = Object.assign({}, this.requestData);
         // if there is some cached data in the storage it should been updated
         if (cachedData.rates && cachedData.rates.length > 0) {
           // get last date from cache
-          this.requestData.start_at = this.dateService.getLastDate(
+
+          localRequestData.start_at = this.dateService.getLastDate(
             cachedData.rates
           );
-
           // if the last date less than current, we should update data
           let getActualData;
           if (
             this.dateService.getLastDate(cachedData.rates) <
-            this.requestData.end_at
+            localRequestData.end_at
           ) {
-            getActualData = this.httpGetCurrencyHistory(this.requestData)
+            getActualData = this.httpGetCurrencyHistory(localRequestData)
               // update
               .pipe(
                 switchMap(response => {
@@ -131,6 +118,8 @@ export class GetHistoryServiceService {
           );
           // if no data cached then get currency data for all period of dates
         } else {
+          this.requestData.base = cachedData.base;
+          this.requestData.symbols = cachedData.symbols;
           return (
             this.httpGetCurrencyHistory(this.requestData)
               // find extremes(min and max points)

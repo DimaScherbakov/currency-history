@@ -5,11 +5,12 @@ import { Injectable } from '@angular/core';
 })
 export class CalculatorService {
   name;
+  deposit = 0;
   constructor() {}
 
   getMaxBet(rates, extremes, recommends, name) {
-    this.name = name;
-    const deposit = 100; // get data from user component
+    this.name = name; // currency pair name
+    const deposit = this.deposit; // get data from user component
     const currentRate = rates.sort((a, b) => {
       // use new variables to calm down the linter
       const dateA: any = new Date(a.date);
@@ -24,13 +25,10 @@ export class CalculatorService {
   }
 
   private getWorstRate(extremes, recommends) {
-    const errorText = `(${
-      this.name
-    }) We have recomendations to sell and buy currency at the same time, rates list might not have enough data`;
+    const errorText = `(${this.name}) We have recomendations to sell and buy currency at the same time, rates list might not have enough data`;
     if (recommends.sell && recommends.buy) {
       if (this.name !== 'BGN EUR') {
         throw new Error(errorText);
-        // console.error(errorText);
       }
       console.error(errorText);
     }

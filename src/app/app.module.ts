@@ -5,12 +5,19 @@ import { ChartsModule } from 'ng2-charts';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatTableModule } from '@angular/material/table';
 import { AppRoutingModule } from './app.routing';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import {
+  MatFormFieldModule,
+  MatInputModule,
+  MatCardModule
+} from '@angular/material';
 
 import { AppComponent } from './app.component';
 import { HistoryTableComponent } from './history-table/history-table.component';
 import { HistoryChartComponent } from './history-chart/history-chart.component';
 import { CurrencyItemComponent } from './currency-item/currency-item.component';
 import { CurrencyListComponent } from './currency-list/currency-list.component';
+import { UserComponent } from './user/user.component';
 
 @NgModule({
   declarations: [
@@ -18,7 +25,8 @@ import { CurrencyListComponent } from './currency-list/currency-list.component';
     HistoryTableComponent,
     HistoryChartComponent,
     CurrencyItemComponent,
-    CurrencyListComponent
+    CurrencyListComponent,
+    UserComponent
   ],
   imports: [
     BrowserModule,
@@ -26,7 +34,12 @@ import { CurrencyListComponent } from './currency-list/currency-list.component';
     HttpClientModule,
     ChartsModule,
     BrowserAnimationsModule,
-    MatTableModule
+    MatTableModule,
+    FormsModule,
+    ReactiveFormsModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatCardModule
   ],
   providers: [],
   bootstrap: [AppComponent]
