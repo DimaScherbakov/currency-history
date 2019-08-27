@@ -29,10 +29,10 @@ export class GetHistoryServiceService {
 
   httpGetCurrencyHistory(requestData) {
     const httpOptions = {
-      start_at: this.requestData.start_at,
-      end_at: this.requestData.end_at,
-      base: this.requestData.base,
-      symbols: this.requestData.symbols
+      start_at: requestData.start_at,
+      end_at: requestData.end_at,
+      base: requestData.base,
+      symbols: requestData.symbols
     };
     return (
       this.http
@@ -73,7 +73,6 @@ export class GetHistoryServiceService {
         // if there is some cached data in the storage it should been updated
         if (cachedData.rates && cachedData.rates.length > 0) {
           // get last date from cache
-
           localRequestData.start_at = this.dateService.getLastDate(
             cachedData.rates
           );
@@ -120,10 +119,8 @@ export class GetHistoryServiceService {
           );
           // if no data cached then get currency data for all period of dates
         } else {
-          this.requestData.base = cachedData.base;
-          this.requestData.symbols = cachedData.symbols;
           return (
-            this.httpGetCurrencyHistory(this.requestData)
+            this.httpGetCurrencyHistory(localRequestData)
               // find extremes(min and max points)
               .pipe(
                 map((resp: any) => {
