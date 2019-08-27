@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { CalculatorService } from '../calculator.service';
+import { CalculatorService } from '../services/calculator.service';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
-import { TransferUserDataService } from '../transfer-user-data.service';
+import { TransferUserDataService } from '../services/transfer-user-data.service';
 import { of } from 'rxjs';
 
 @Component({

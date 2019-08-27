@@ -2,9 +2,9 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { ChartDataSets, ChartOptions } from 'chart.js';
 import { Color, BaseChartDirective, Label } from 'ng2-charts';
 import * as pluginAnnotations from 'chartjs-plugin-annotation';
-import { GetExtremesService } from '../get-extremes.service';
+import { GetExtremesService } from '../services/get-extremes.service';
 
-import { TransactionAreaService } from '../transaction-area.service';
+import { TransactionAreaService } from '../services/transaction-area.service';
 
 @Component({
   selector: 'app-history-chart',

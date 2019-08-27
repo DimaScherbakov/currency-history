@@ -1,14 +1,14 @@
 import { Component, OnInit } from '@angular/core';
 import { currencies } from '../currency-list';
-import { GetHistoryServiceService } from '../get-history-service.service';
-import { GetExtremesService } from '../get-extremes.service';
+import { GetHistoryServiceService } from '../services/get-history-service.service';
+import { GetExtremesService } from '../services/get-extremes.service';
 import { MatTableDataSource } from '@angular/material/table';
-import { TransactionAreaService } from '../transaction-area.service';
+import { TransactionAreaService } from '../services/transaction-area.service';
 import { Router } from '@angular/router';
-import { CalculatorService } from '../calculator.service';
+import { CalculatorService } from '../services/calculator.service';
 import { from, of } from 'rxjs';
 import { concatAll, switchMap, tap } from 'rxjs/operators';
-import { TransferUserDataService } from '../transfer-user-data.service';
+import { TransferUserDataService } from '../services/transfer-user-data.service';
 @Component({
   selector: 'app-currency-list',
   templateUrl: './currency-list.component.html',

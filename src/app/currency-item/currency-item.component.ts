@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { TransactionAreaService } from '../transaction-area.service';
+import { TransactionAreaService } from '../services/transaction-area.service';
 
 @Component({
   selector: 'app-currency-item',
