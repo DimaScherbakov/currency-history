@@ -80,12 +80,9 @@ export class CurrencyListComponent implements OnInit {
       });
   }
 
-  navigate(currency) {
-    this.router.navigate([
-      'currency-item',
-      `${currency.base}-${currency.symbols}`
-    ]);
-    this.transactionAreaService.emitCurrency(currency);
+  navigate(row) {
+    this.router.navigate(['currency-item', `${row.base}-${row.symbols}`]);
+    this.transactionAreaService.emitCurrency(row);
   }
 
   private generateCurrencyPairNames(
